@@ -8,7 +8,7 @@ function App() {
   });
 
   const [todoList, setTodoList] = useState([]);
-  const [selectedTab,setSelectedTab] = useState("All");
+  const [selectedTab,setSelectedTab] = useState("");
   useEffect(()=>{
     if (todoList.length == 0) return;
     
@@ -18,6 +18,10 @@ function App() {
   useEffect(()=>{
     const todolistFromLocalStore = JSON.parse(localStorage.getItem("todoList") || "[]");
      setTodoList(todolistFromLocalStore);
+  },[])
+
+  useEffect(()=>{
+    setSelectedTab("All")
   },[])
 
   const onDelete = (index)=>{
@@ -64,17 +68,18 @@ function App() {
             className="bg-blue-300 w-[100px] md:w-[150px] p-1 ml-2 md:ml-5 md:p-2 rounded-lg text-[16px] md:text-xl cursor-pointer"
             onClick={() => {
               if(!todoItem.task || !todoItem.priority){
-                toast.error("Sorry!! No task and priority added");
+                toast.error("Sorry!! No task and priority added",{duration:1000});
                 return;
-               
               }
+              setSelectedTab("All");
+
               setTodoList([todoItem, ...todoList]);
               setTodoItem({
                 task: "",
                 priority: "",
               });
             
-            toast.success("Task added successfully")}}
+            toast.success("Task added successfully",{duration:1000})}}
           >
             Add
           </button>
@@ -83,14 +88,20 @@ function App() {
           {todoList.map((listitem, index) => {
             const { task, priority } = listitem;
 
+            if(selectedTab != "All" && priority != selectedTab){
+              return null;
+            }
+
             return <TodoCard key={index} task={task} priority={priority} index={index} onDelete={onDelete}/>;
           })}
         </div>
-        <div className="flex justify-between bottom-1 fixed border-t-2 border-slate-400 pb-2">
+        <div className=" flex justify-between bottom-1 fixed pb-2">
           {["All","High","Medium","Low"].map((tab,i) => {
             return(
               <span 
-              className={`block w-[250px] text-xl text-center rounded-bl-lg rounded-br-lg`}>
+              className={`block text-xl text-center rounded-bl-lg rounded-br-lg bg-blue-300 w-60 p-4 ml-30 border-1 border-black ${tab == selectedTab?`bg-blue-600 text-white`:`bg-blue-300 cursor-pointer` }`} 
+              onClick={()=>{setSelectedTab(tab)}}
+              key={i}>
               {tab}</span>
             )
           })}
