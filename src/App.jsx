@@ -84,7 +84,7 @@ function App() {
             Add
           </button>
         </div>
-        <div>
+        <div className="w-full h-[900px] overflow-y-scroll overflow-x-hidden border border-gray-800 rounded-lg p-2.5 bg-white text-left ">
           {todoList.map((listitem, index) => {
             const { task, priority } = listitem;
 
